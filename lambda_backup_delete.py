@@ -10,16 +10,15 @@ regloop = ['eu-west-1','eu-west-2'] #Set your regions here
 
 def lambda_handler(event, context):
     
+    def findTagValue(tags, tagName):
+        for i in tags:
+            if i['Key'] == tagName:
+                return i['Value']
+        return 5
+    
     for r in regloop: 
         ec = boto3.client('ec2',region_name=r)
         ec2 = boto3.resource('ec2',region_name=r)
-        
-        def findTagValue(tags, tagName):
-            for i in tags:
-                if i['Key'] == tagName:
-                    return i['Value']
-            return 5
-    
         snapshot_response = ec.describe_snapshots(OwnerIds=account_id)
     
         for snap in snapshot_response['Snapshots']:
