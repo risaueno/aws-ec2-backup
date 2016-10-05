@@ -1,14 +1,15 @@
 #!/usr/bin/python
 
 import boto3
-
-regloop = ['eu-west-1','eu-west-2'] #List regions used
+import collections
 
 def lambda_handler(event, context):
     
-    for r in regloop: 
-        ec = boto3.client('ec2',region_name=r)
+    regions = ['eu-west-1','ap-northeast-1']
     
+    for r in regions: 
+        ec = boto3.client('ec2',region_name=r)
+
         reservations = ec.describe_instances(
                 Filters=[
                     {'Name': 'tag-key', 'Values': ['backup', 'Backup']},
@@ -24,9 +25,6 @@ def lambda_handler(event, context):
         print "Found %d instances that need backing up" % len(instances)
 
         for instance in instances:
-            print instance['InstanceId']
-
-        for instance in instances:
             ins_id = instance['InstanceId']
             try:
                 ins_name = [str(t.get('Value')) for t in instance['Tags'] if t['Key'] == 'Name'][0]
@@ -37,5 +35,6 @@ def lambda_handler(event, context):
                 if dev.get('Ebs', None) is None:
                     continue
                 vol_id = dev['Ebs']['VolumeId']
-                print "Found EBS volume %s on instance %s" % (vol_id, ins_id)
+                print "Found EBS volume %s on instance %s ..." % (vol_id, ins_id)
                 snap = ec.create_snapshot(VolumeId=vol_id, Description = "%s/%s" % ("AUTO-BACKUP: "+ins_name,ins_id),)
+                print "Snapshot created"
