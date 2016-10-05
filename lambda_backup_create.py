@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 import boto3
-import collections
-import datetime
-import time
 
 regloop = ['eu-west-1','eu-west-2'] #List regions used
 
@@ -28,8 +25,6 @@ def lambda_handler(event, context):
 
         for instance in instances:
             print instance['InstanceId']
-
-        to_tag = collections.defaultdict(list)
 
         for instance in instances:
             ins_id = instance['InstanceId']
