@@ -5,7 +5,7 @@ import collections
 
 def lambda_handler(event, context):
     
-    regions = ['eu-west-1','ap-northeast-1']
+    regions = ['eu-west-1','eu-west-2','eu-west-3'] # set regions here
     
     for r in regions: 
         ec = boto3.client('ec2',region_name=r)
